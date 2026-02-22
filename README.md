@@ -1,6 +1,6 @@
 # SATU DATU SANGGUL
 
-**Portal Satu Pintu RSUD Dokter H. Andi Abdurrahman Noor (Datu Sanggul)**
+**Portal Satu Pintu RSUD Datu Sanggul**
 
 SATU DATU SANGGUL adalah aplikasi portal dashboard satu pintu untuk RSUD Datu Sanggul di Kabupaten Tapin. Aplikasi ini dibuat untuk memudahkan pengunjung (pasien/keluarga) dan pegawai mengakses berbagai layanan digital rumah sakit tanpa harus menghafal banyak URL.
 

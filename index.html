@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATU DATU SANGGUL - Portal Satu Pintu RSUD Datu Sanggul</title>
+    <meta name="description" content="Portal satu pintu untuk mengakses semua layanan digital RSUD Datu Sanggul">
+    <meta name="theme-color" content="#0ea5e9">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Custom Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#fdf4ff',
+                            100: '#fae8ff',
+                            200: '#f5d0fe',
+                            300: '#f0abfc',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c026d3',
+                            700: '#a21caf',
+                            800: '#86198f',
+                            900: '#701a75',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body
+    x-data="app()"
+    x-init="init()"
+    :class="{ 'dark': darkMode }"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300"
+>
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-800 dark:to-secondary-800 shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">SATU DATU SANGGUL</h1>
+                        <p class="text-white/80 text-sm md:text-base">Satu Pintu, Semua Layanan Terbantu</p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+                    <!-- Dark Mode Toggle -->
+                    <button
+                        @click="toggleDarkMode()"
+                        class="p-3 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all duration-200"
+                        :title="darkMode ? 'Mode Terang' : 'Mode Gelap'"
+                    >
+                        <svg x-show="!darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                        <svg x-show="darkMode" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Search Bar -->
+        <div class="mb-8">
+            <div class="relative max-w-2xl mx-auto">
+                <input
+                    type="text"
+                    x-model="searchQuery"
+                    placeholder="Cari layanan..."
+                    class="w-full px-6 py-4 pl-14 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all duration-200 text-gray-800 dark:text-white"
+                >
+                <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex justify-center mb-8">
+            <div class="inline-flex bg-white dark:bg-gray-800 rounded-2xl p-1 shadow-lg">
+                <button
+                    @click="activeTab = 'publik'"
+                    :class="activeTab === 'publik' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                    class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Layanan Publik
+                </button>
+                <button
+                    @click="activeTab = 'internal'"
+                    :class="activeTab === 'internal' ? 'bg-secondary-500 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                    class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    Layanan Internal
+                </button>
+            </div>
+        </div>
+
+        <!-- Authentication Modal for Internal Tab -->
+        <div
+            x-show="showAuthModal"
+            x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+            <div
+                x-show="showAuthModal"
+                x-cloak
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8"
+            >
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-secondary-100 dark:bg-secondary-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Akses Layanan Internal</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2">Masukkan password untuk melanjutkan</p>
+                </div>
+
+                <form @submit.prevent="verifyPassword">
+                    <div class="mb-4 relative">
+                        <input
+                            :type="showAuthPassword ? 'text' : 'password'"
+                            x-model="authPassword"
+                            placeholder="Masukkan password"
+                            class="w-full px-4 py-3 pr-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-secondary-500 focus:ring-4 focus:ring-secondary-500/20 transition-all"
+                            :disabled="authLoading"
+                        >
+                        <button
+                            type="button"
+                            @click="showAuthPassword = !showAuthPassword"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                        >
+                            <svg x-show="!showAuthPassword" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <svg x-show="showAuthPassword" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div x-show="authError" x-cloak class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm text-center">
+                        <span x-text="authError"></span>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button
+                            type="button"
+                            @click="showAuthModal = false; activeTab = 'publik'"
+                            class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                            :disabled="authLoading"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="submit"
+                            class="flex-1 px-4 py-3 rounded-xl bg-secondary-500 text-white font-medium hover:bg-secondary-600 transition-all flex items-center justify-center gap-2"
+                            :disabled="authLoading"
+                        >
+                            <svg x-show="authLoading" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-text="authLoading ? 'Memeriksa...' : 'Masuk'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pendaftaran Modal -->
+        <div
+            x-show="showPendaftaranModal"
+            x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            @click.self="showPendaftaranModal = false"
+        >
+            <div
+                x-show="showPendaftaranModal"
+                x-cloak
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-lg w-full p-8 max-h-[90vh] overflow-y-auto"
+            >
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Pendaftaran Online</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Pilih jenis pendaftaran</p>
+                        </div>
+                    </div>
+                    <button
+                        @click="showPendaftaranModal = false; resetPendaftaranForm()"
+                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-all"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Step 1: Pilih Pasien -->
+                <div x-show="pendaftaranStep === 1">
+                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Jenis Pasien</h4>
+                    <div class="space-y-3">
+                        <button
+                            @click="pendaftaranJenisPasien = 'lama'; pendaftaranStep = 2"
+                            class="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all flex items-center gap-4 text-left"
+                        >
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800 dark:text-white">Pasien Lama</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Sudah pernah berobat di RSUD Datu Sanggul</div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+
+                        <button
+                            @click="pendaftaranJenisPasien = 'baru'; pendaftaranStep = 3"
+                            class="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all flex items-center gap-4 text-left"
+                        >
+                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800 dark:text-white">Pasien Baru</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Pertama kali berobat di RSUD Datu Sanggul</div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Pasien Lama - Pilih Jenis Pembayaran -->
+                <div x-show="pendaftaranStep === 2">
+                    <button
+                        @click="pendaftaranStep = 1"
+                        class="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4 transition-all"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Kembali
+                    </button>
+                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Pasien Lama - Pilih Jenis Pembayaran</h4>
+                    <div class="space-y-3">
+                        <button
+                            @click="openMobileJKN()"
+                            class="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all flex items-center gap-4 text-left"
+                        >
+                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800 dark:text-white">BPJS Kesehatan</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Daftar melalui aplikasi Mobile JKN</div>
+                            </div>
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </button>
+
+                        <button
+                            @click="pendaftaranStep = 4"
+                            class="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all flex items-center gap-4 text-left"
+                        >
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800 dark:text-white">Umum / Perusahaan</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Bayar secara mandiri ataujamin perusahaan</div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Pasien Baru - Form -->
+                <div x-show="pendaftaranStep === 3">
+                    <button
+                        @click="pendaftaranStep = 1"
+                        class="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4 transition-all"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Kembali
+                    </button>
+
+                    <!-- Form Progress -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Langkah</span>
+                            <span class="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                                <span x-text="pasienBaruStep"></span> / 4
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                                class="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                                :style="'width: ' + (pasienBaruStep * 25) + '%'"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3.1: Identitas -->
+                    <div x-show="pasienBaruStep === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">1</span>
+                            Data Identitas
+                        </h4>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">NIK (Nomor Induk Kependudukan) *</label>
+                            <input
+                                type="text"
+                                x-model="pasienBaru.data.nik"
+                                maxlength="16"
+                                placeholder="Masukkan 16 digit NIK"
+                                class="w-full px-4 py-3 rounded-xl border-2"
+                                :class="pasienBaru.data.nik.length === 16 ? 'border-green-500 focus:border-green-500' : 'border-gray-200 dark:border-gray-700 focus:border-purple-500'"
+                                class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-4 focus:ring-purple-500/20 transition-all"
+                                @input="validateNIK()"
+                            >
+                            <p x-show="pasienBaruErrors.nikError" x-text="pasienBaruErrors.nikError" class="text-red-500 text-sm mt-1"></p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Lengkap *</label>
+                            <input
+                                type="text"
+                                x-model="pasienBaru.data.nama"
+                                placeholder="Nama sesuai KTP"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal Lahir *</label>
+                            <input
+                                type="date"
+                                x-model="pasienBaru.data.tglLahir"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Kelamin *</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" x-model="pasienBaru.data.jenisKelamin" value="L" class="w-4 h-4 text-purple-600">
+                                    <span class="text-gray-700 dark:text-gray-300">Laki-laki</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" x-model="pasienBaru.data.jenisKelamin" value="P" class="w-4 h-4 text-purple-600">
+                                    <span class="text-gray-700 dark:text-gray-300">Perempuan</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button
+                                @click="pasienBaruStep = 2"
+                                :disabled="!isValidStep1()"
+                                class="px-6 py-3 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+                            >
+                                Lanjut
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3.2: Kontak -->
+                    <div x-show="pasienBaruStep === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">2</span>
+                            Data Kontak
+                        </h4>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nomor WhatsApp *</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">+62</span>
+                                <input
+                                    type="tel"
+                                    x-model="pasienBaru.data.noWA"
+                                    maxlength="13"
+                                    placeholder="8xx-xxxx-xxxx"
+                                    class="w-full pl-12 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alamat Lengkap *</label>
+                            <textarea
+                                x-model="pasienBaru.data.alamat"
+                                rows="3"
+                                placeholder="Alamat lengkap sesuai KTP"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all resize-none"
+                            ></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Penanggung Jawab (Opsional)</label>
+                            <input
+                                type="text"
+                                x-model="pasienBaru.data.penanggung"
+                                placeholder="Nama penanggung jawab jika diperlukan"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Hubungan dengan Pasien (Opsional)</label>
+                            <select
+                                x-model="pasienBaru.data.hubungan"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all"
+                            >
+                                <option value="">Pilih hubungan</option>
+                                <option value="Istri/Suami">Istri/Suami</option>
+                                <option value="Orang Tua">Orang Tua</option>
+                                <option value="Anak">Anak</option>
+                                <option value="Saudara">Saudara</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button
+                                @click="pasienBaruStep = 1"
+                                class="px-6 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                            >
+                                Kembali
+                            </button>
+                            <button
+                                @click="pasienBaruStep = 3"
+                                :disabled="!isValidStep2()"
+                                class="px-6 py-3 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+                            >
+                                Lanjut
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3.3: Konfirmasi -->
+                    <div x-show="pasienBaruStep === 3" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">3</span>
+                            Konfirmasi Data
+                        </h4>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">NIK</span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="pasienBaru.data.nik"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Nama</span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="pasienBaru.data.nama"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Tgl Lahir</span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="pasienBaru.data.tglLahir"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Jenis Kelamin</span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="pasienBaru.data.jenisKelamin"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">No. WhatsApp</span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="'+62 ' + pasienBaru.data.noWA"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Alamat</span>
+                                <span class="font-medium text-gray-800 dark:text-white text-right max-w-[200px]" x-text="pasienBaru.data.alamat"></span>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4">
+                            <p class="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-2">ℹ️ Informasi:</p>
+                            <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                                <li>• Data akan disimpan dan diverifikasi oleh admin RSUD</li>
+                                <li>• Anda akan menerima notifikasi melalui WhatsApp</li>
+                                <li>• Silakan membawa KTP asli saat kunjungan pertama</li>
+                            </ul>
+                        </div>
+
+                        <div class="flex items-start gap-3 mb-4">
+                            <input
+                                type="checkbox"
+                                x-model="pasienBaruErrors.agree"
+                                id="agree-terms"
+                                class="w-5 h-5 mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            >
+                            <label for="agree-terms" class="text-sm text-gray-600 dark:text-gray-400">
+                                Saya menyatakan bahwa data yang diisi adalah benar dan saya menyetujui syarat & ketentuan yang berlaku
+                            </label>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button
+                                @click="pasienBaruStep = 2"
+                                class="px-6 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                            >
+                                Kembali
+                            </button>
+                            <button
+                                @click="submitPasienBaru()"
+                                :disabled="!pasienBaruErrors.agree || submitPasienBaruLoading"
+                                class="px-6 py-3 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                            >
+                                <svg x-show="submitPasienBaruLoading" x-cloak class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span x-text="submitPasienBaruLoading ? 'Mengirim...' : 'Daftar Sekarang'"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3.4: Sukses -->
+                    <div x-show="pasienBaruStep === 4" class="text-center py-8">
+                        <div class="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Pendaftaran Berhasil!</h4>
+                        <p class="text-gray-500 dark:text-gray-400 mb-6">Terima kasih telah mendaftar sebagai pasien baru. Data Anda sedang diproses untuk verifikasi.</p>
+                        <p class="text-green-600 dark:text-green-400 font-medium mb-6">ID Pendaftaran: <span x-text="pasienBaruErrors.registrationId"></span></p>
+
+                        <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 mb-6 text-left">
+                            <p class="text-sm text-green-800 dark:text-green-200 font-medium mb-2">Langkah selanjutnya:</p>
+                            <ol class="text-sm text-green-700 dark:text-green-300 space-y-1 list-decimal list-inside">
+                                <li>Tunggu notifikasi verifikasi melalui WhatsApp</li>
+                                <li>Bawa KTP asli saat kunjungan pertama</li>
+                                <li>Pastikan nomor WhatsApp Anda aktif</li>
+                            </ol>
+                        </div>
+
+                        <button
+                            @click="showPendaftaranModal = false; resetPendaftaranForm()"
+                            class="px-6 py-3 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 transition-all"
+                        >
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Pasien Lama Umum/Perusahaan -->
+                <div x-show="pendaftaranStep === 4">
+                    <button
+                        @click="pendaftaranStep = 2"
+                        class="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4 transition-all"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Kembali
+                    </button>
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Pendaftaran Umum / Perusahaan</h4>
+                        <p class="text-gray-500 dark:text-gray-400 mb-6">Silakan datang langsung ke loket pendaftaran atau hubungi admin</p>
+
+                        <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 mb-6">
+                            <p class="text-green-800 dark:text-green-200 font-medium mb-2">📞 Kontak Loket Pendaftaran:</p>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">0517-xxxxx</p>
+                            <p class="text-sm text-green-700 dark:text-green-300 mt-1">Buka: Senin - Sabtu, 07:00 - 15:00</p>
+                        </div>
+
+                        <button
+                            @click="showPendaftaranModal = false; resetPendaftaranForm()"
+                            class="px-6 py-3 rounded-xl bg-green-500 text-white font-medium hover:bg-green-600 transition-all"
+                        >
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <template x-for="service in filteredServices" :key="service.id">
+                <a
+                    :href="service.url"
+                    :target="service.external ? '_blank' : undefined"
+                    :rel="service.external ? 'noopener noreferrer' : undefined"
+                    @click="service.id === 'pendaftaran' ? (showPendaftaranModal = true) : null"
+                    class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700 overflow-hidden"
+                >
+                    <!-- Gradient accent -->
+                    <div
+                        :class="service.accentColor"
+                        class="absolute top-0 right-0 w-24 h-24 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300 -translate-y-1/2 translate-x-1/2"
+                    ></div>
+
+                    <!-- Icon -->
+                    <div
+                        :class="service.iconBg"
+                        class="w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
+                    >
+                        <svg
+                            :class="service.iconColor"
+                            class="w-7 h-7"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            x-html="service.icon"
+                        ></svg>
+                    </div>
+
+                    <!-- Title & Description -->
+                    <h3
+                        :class="service.titleColor"
+                        class="text-lg font-bold mb-2"
+                        x-text="service.title"
+                    ></h3>
+                    <p
+                        class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed"
+                        x-text="service.description"
+                    ></p>
+
+                    <!-- Special content for specific services -->
+                    <template x-if="service.id === 'kamar' && kamarData">
+                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <div x-show="loadingKamar" class="text-sm text-gray-400">Memuat data...</div>
+                            <div x-show="!loadingKamar" class="space-y-2">
+                                <template x-for="(data, kelas) in kamarData">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-300" x-text="formatKelas(kelas)"></span>
+                                        <span
+                                            :class="data.kosong > 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="data.kosong + ' kosong'"
+                                        ></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="service.id === 'jadwal' && jadwalData">
+                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <div x-show="loadingJadwal" class="text-sm text-gray-400">Memuat data...</div>
+                            <div x-show="!loadingJadwal" class="space-y-2">
+                                <template x-for="(dokter, index) in jadwalData.slice(0, 3)" :key="index">
+                                    <div class="text-sm">
+                                        <div class="font-medium text-gray-700 dark:text-gray-200" x-text="dokter.nama"></div>
+                                        <div class="text-gray-500" x-text="dokter.spesialis + ' - ' + dokter.jadwal"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Arrow indicator -->
+                    <div
+                        :class="service.iconColor"
+                        class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <!-- External link indicator -->
+                    <div x-show="service.external" class="absolute top-4 right-4 opacity-50">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </div>
+                </a>
+            </template>
+
+            <!-- No results message -->
+            <div
+                x-show="filteredServices.length === 0"
+                x-cloak
+                class="col-span-full text-center py-12"
+            >
+                <div class="text-gray-400 mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400">Tidak ada layanan yang ditemukan</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <span class="font-semibold text-gray-800 dark:text-white">RSUD Datu Sanggul</span>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                    Kabupaten Tapin, Kalimantan Selatan
+                </p>
+                <p class="text-gray-400 dark:text-gray-500 text-xs">
+                    &copy; 2026 SATU DATU SANGGUL. Portal Satu Pintu.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Script -->
+    <script>
+        function app() {
+            return {
+                darkMode: false,
+                activeTab: 'publik',
+                searchQuery: '',
+                isAuthenticated: false,
+                showAuthModal: false,
+                showAuthPassword: false,
+                authPassword: '',
+                authError: '',
+                authLoading: false,
+                kamarData: null,
+                jadwalData: null,
+                loadingKamar: false,
+                loadingJadwal: false,
+
+                // Pendaftaran Modal State
+                showPendaftaranModal: false,
+                pendaftaranStep: 1,
+                pendaftaranJenisPasien: '',
+
+                // Pasien Baru Form State
+                pasienBaruStep: 1,
+                pasienBaru: {
+                    nik: '',
+                    nama: '',
+                    tglLahir: '',
+                    jenisKelamin: '',
+                    noWA: '',
+                    alamat: '',
+                    penanggung: '',
+                    hubungan: ''
+                },
+                pasienBaruErrors: {
+                    nikError: '',
+                    agree: false,
+                    registrationId: ''
+                },
+                submitPasienBaruLoading: false,
+
+                // Public Services
+                publicServices: [
+                    {
+                        id: 'pendaftaran',
+                        title: 'Pendaftaran Online',
+                        description: 'Daftar antrean poliklinik dan layanan kesehatan secara online',
+                        url: '#pendaftaran',
+                        external: false,
+                        hasSubmenu: true,
+                        iconBg: 'bg-green-100 dark:bg-green-900/30',
+                        iconColor: 'text-green-600 dark:text-green-400',
+                        accentColor: 'bg-green-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
+                    },
+                    {
+                        id: 'kamar',
+                        title: 'Cek Ketersediaan Kamar',
+                        description: 'Informasi real-time ketersediaan tempat tidur di berbagai kelas rawat inap',
+                        url: '#kamar',
+                        external: false,
+                        iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+                        iconColor: 'text-blue-600 dark:text-blue-400',
+                        accentColor: 'bg-blue-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>'
+                    },
+                    {
+                        id: 'jadwal',
+                        title: 'Jadwal Dokter',
+                        description: 'Informasi jadwal praktik dokter spesialis dan jadwal poli setiap harinya',
+                        url: '#jadwal',
+                        external: false,
+                        iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+                        iconColor: 'text-purple-600 dark:text-purple-400',
+                        accentColor: 'bg-purple-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>'
+                    },
+                    {
+                        id: 'igd',
+                        title: 'Layanan IGD 24 Jam',
+                        description: 'Informasi dan akses ke Instalasi Gawat Darurat yang beroperasi 24 jam',
+                        url: '#igd',
+                        external: false,
+                        iconBg: 'bg-red-100 dark:bg-red-900/30',
+                        iconColor: 'text-red-600 dark:text-red-400',
+                        accentColor: 'bg-red-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>'
+                    },
+                    {
+                        id: 'lab',
+                        title: 'Hasil Laboratorium',
+                        description: 'Cek hasil pemeriksaan laboratorium secara online',
+                        url: '#lab',
+                        external: false,
+                        iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
+                        iconColor: 'text-yellow-600 dark:text-yellow-400',
+                        accentColor: 'bg-yellow-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>'
+                    },
+                    {
+                        id: 'radiologi',
+                        title: 'Hasil Radiologi',
+                        description: 'Akses hasil pemeriksaan radiologi (X-Ray, CT Scan, MRI)',
+                        url: '#radiologi',
+                        external: false,
+                        iconBg: 'bg-cyan-100 dark:bg-cyan-900/30',
+                        iconColor: 'text-cyan-600 dark:text-cyan-400',
+                        accentColor: 'bg-cyan-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
+                    }
+                ],
+
+                // Internal Services
+                internalServices: [
+                    {
+                        id: 'simrs',
+                        title: 'SIMRS Khanza',
+                        description: 'Sistem Informasi Manajemen Rumah Sakit untuk manajemen pasien dan layanan',
+                        url: 'https://simrs.rsdatusanggul.com',
+                        external: true,
+                        iconBg: 'bg-indigo-100 dark:bg-indigo-900/30',
+                        iconColor: 'text-indigo-600 dark:text-indigo-400',
+                        accentColor: 'bg-indigo-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+                    },
+                    {
+                        id: 'ekinerja',
+                        title: 'E-Kinerja',
+                        description: 'Portal pelaporan kinerja harian pegawai RSUD',
+                        url: 'https://ekinerja.rsuddatusanggul.go.id',
+                        external: true,
+                        iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+                        iconColor: 'text-emerald-600 dark:text-emerald-400',
+                        accentColor: 'bg-emerald-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>'
+                    },
+                    {
+                        id: 'absensi',
+                        title: 'Absensi Pegawai',
+                        description: 'Portal kehadiran dan absensi pegawai RSUD',
+                        url: 'https://absensi.rsuddatusanggul.go.id',
+                        external: true,
+                        iconBg: 'bg-orange-100 dark:bg-orange-900/30',
+                        iconColor: 'text-orange-600 dark:text-orange-400',
+                        accentColor: 'bg-orange-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                    },
+                    {
+                        id: 'earsip',
+                        title: 'E-Arsip / Tata Usaha',
+                        description: 'Digitalisasi surat menyurat dan arsip dokumen administrasi',
+                        url: 'https://earsip.rsuddatusanggul.go.id',
+                        external: true,
+                        iconBg: 'bg-pink-100 dark:bg-pink-900/30',
+                        iconColor: 'text-pink-600 dark:text-pink-400',
+                        accentColor: 'bg-pink-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>'
+                    },
+                    {
+                        id: 'farmasi',
+                        title: 'Manajemen Farmasi',
+                        description: 'Sistem manajemen obat dan logistik farmasi RSUD',
+                        url: '#farmasi',
+                        external: false,
+                        iconBg: 'bg-teal-100 dark:bg-teal-900/30',
+                        iconColor: 'text-teal-600 dark:text-teal-400',
+                        accentColor: 'bg-teal-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>'
+                    },
+                    {
+                        id: 'keuangan',
+                        title: 'Sistem Keuangan',
+                        description: 'Portal manajemen keuangan dan pembayaran RSUD',
+                        url: '#keuangan',
+                        external: false,
+                        iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+                        iconColor: 'text-amber-600 dark:text-amber-400',
+                        accentColor: 'bg-amber-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                    },
+                    {
+                        id: 'silola',
+                        title: 'Silola-Sentrik',
+                        description: 'Sistem Layanan Terpadu Sentralisasi Informasi RSUD',
+                        url: 'https://silola-sentrik.rsdatusanggul.com',
+                        external: true,
+                        iconBg: 'bg-rose-100 dark:bg-rose-900/30',
+                        iconColor: 'text-rose-600 dark:text-rose-400',
+                        accentColor: 'bg-rose-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                    },
+                    {
+                        id: 'sidandang',
+                        title: 'Sidandang',
+                        description: 'Sistem Informasi Pengaduan dan Gangguan SIMRS',
+                        url: 'https://sidandang.rsdatusanggul.com/',
+                        external: true,
+                        iconBg: 'bg-violet-100 dark:bg-violet-900/30',
+                        iconColor: 'text-violet-600 dark:text-violet-400',
+                        accentColor: 'bg-violet-500',
+                        titleColor: 'text-gray-800 dark:text-white',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>'
+                    }
+                ],
+
+                init() {
+                    // Initialize dark mode from localStorage or system preference
+                    if (localStorage.getItem('darkMode') === 'true' ||
+                        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        this.darkMode = true;
+                    }
+
+                    // Register service worker
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.register('/service-worker.js')
+                            .then(reg => console.log('Service Worker registered'))
+                            .catch(err => console.log('Service Worker registration failed:', err));
+                    }
+
+                    // Watch for tab changes
+                    this.$watch('activeTab', (value) => {
+                        if (value === 'internal' && !this.isAuthenticated) {
+                            this.showAuthModal = true;
+                        }
+                    });
+
+                    // Load data from API
+                    this.loadKamarData();
+                    this.loadJadwalData();
+                },
+
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    localStorage.setItem('darkMode', this.darkMode);
+                },
+
+                get filteredServices() {
+                    const services = this.activeTab === 'publik' ? this.publicServices : this.internalServices;
+                    if (!this.searchQuery) return services;
+
+                    const query = this.searchQuery.toLowerCase();
+                    return services.filter(service =>
+                        service.title.toLowerCase().includes(query) ||
+                        service.description.toLowerCase().includes(query)
+                    );
+                },
+
+                verifyPassword() {
+                    this.authLoading = true;
+                    this.authError = '';
+
+                    // Simple client-side authentication (for development)
+                    const correctPassword = 'rahasia123';
+
+                    setTimeout(() => {
+                        if (this.authPassword === correctPassword) {
+                            this.isAuthenticated = true;
+                            this.showAuthModal = false;
+                            this.authPassword = '';
+                        } else {
+                            this.authError = 'Password salah';
+                        }
+                        this.authLoading = false;
+                    }, 500);
+                },
+
+                loadKamarData() {
+                    this.loadingKamar = true;
+                    fetch('api/kamar.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.kamarData = data;
+                        })
+                        .catch(error => {
+                            console.error('Failed to load kamar data:', error);
+                        })
+                        .finally(() => {
+                            this.loadingKamar = false;
+                        });
+                },
+
+                loadJadwalData() {
+                    this.loadingJadwal = true;
+                    fetch('api/jadwal.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.jadwalData = data;
+                        })
+                        .catch(error => {
+                            console.error('Failed to load jadwal data:', error);
+                        })
+                        .finally(() => {
+                            this.loadingJadwal = false;
+                        });
+                },
+
+                // Pendaftaran Modal Functions
+                resetPendaftaranForm() {
+                    this.pendaftaranStep = 1;
+                    this.pendaftaranJenisPasien = '';
+                    this.resetPasienBaru();
+                },
+
+                openPendaftaranModal() {
+                    this.showPendaftaranModal = true;
+                    this.resetPendaftaranForm();
+                },
+
+                openMobileJKN() {
+                    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                    if (/android/i.test(userAgent)) {
+                        // Jika Android - gunakan Intent URL scheme untuk lebih reliable
+                        const packageId = 'app.bpjs.mobile';
+                        const intentUrl = `intent://bpjs-kesehatan.go.id/#Intent;scheme=https;package=${packageId};end`;
+
+                        // Coba buka aplikasi dengan intent
+                        window.location.href = intentUrl;
+
+                        // Fallback ke Play Store jika tidak berhasil
+                        setTimeout(() => {
+                            window.location.href = `https://play.google.com/store/apps/details?id=${packageId}`;
+                        }, 2000);
+                    } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                        // Jika iOS
+                        const appUrl = 'bpjsmobile://';
+                        const storeUrl = 'https://apps.apple.com/id/app/mobile-jkn/id1237601115';
+
+                        // Coba buka aplikasi
+                        window.location.href = appUrl;
+
+                        // Set timeout untuk redirect ke App Store jika aplikasi tidak terbuka
+                        setTimeout(() => {
+                            window.location.href = storeUrl;
+                        }, 2500);
+                    } else {
+                        // Jika dibuka dari Laptop/Desktop, arahkan ke landing page BPJS
+                        window.open('https://www.bpjs-kesehatan.go.id', '_blank');
+                    }
+
+                    this.showPendaftaranModal = false;
+                    this.resetPendaftaranForm();
+                },
+
+                formatKelas(kelas) {
+                    const map = {
+                        'kelas_vip': 'VIP',
+                        'kelas_1': 'Kelas 1',
+                        'kelas_2': 'Kelas 2',
+                        'kelas_3': 'Kelas 3',
+                        'vvip': 'VVIP'
+                    };
+                    return map[kelas] || kelas;
+                },
+
+                // Pasien Baru Functions
+                validateNIK() {
+                    const nik = this.pasienBaru.nik.replace(/\D/g, '');
+                    this.pasienBaruErrors.nikError = '';
+
+                    if (nik.length !== 16) {
+                        this.pasienBaruErrors.nikError = 'NIK harus 16 digit';
+                    }
+                },
+
+                isValidStep1() {
+                    return this.pasienBaru.data.nik.length === 16 &&
+                           this.pasienBaru.data.nama.trim() !== '' &&
+                           this.pasienBaru.data.tglLahir !== '' &&
+                           this.pasienBaru.data.jenisKelamin !== '';
+                },
+
+                isValidStep2() {
+                    return this.pasienBaru.data.noWA.length >= 10 &&
+                           this.pasienBaru.data.alamat.trim() !== '';
+                },
+
+                submitPasienBaru() {
+                    this.submitPasienBaruLoading = true;
+
+                    // Generate registration ID
+                    this.pasienBaruErrors.registrationId = 'REG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        this.submitPasienBaruLoading = false;
+                        this.pasienBaruStep = 4;
+
+                        // In production, send to actual API
+                        // this.sendToAPI();
+                    }, 1500);
+                },
+
+                resetPasienBaru() {
+                    this.pasienBaruStep = 1;
+                    this.pasienBaru = {
+                        nik: '',
+                        nama: '',
+                        tglLahir: '',
+                        jenisKelamin: '',
+                        noWA: '',
+                        alamat: '',
+                        penanggung: '',
+                        hubungan: ''
+                    };
+                    this.pasienBaruErrors = {
+                        nikError: '',
+                        agree: false,
+                        registrationId: ''
+                    };
+                    this.submitPasienBaruLoading = false;
+                }
+            };
+        }
+    </script>
+</body>
+</html>

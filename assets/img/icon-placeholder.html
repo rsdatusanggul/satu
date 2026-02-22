@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+    <style>
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <script>
+        function drawIcon(size, filename) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#0ea5e9');
+            gradient.addColorStop(1, '#c026d3');
+
+            // Rounded rectangle background
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.2);
+            ctx.fill();
+
+            // White card
+            ctx.fillStyle = 'white';
+            const cardMargin = size * 0.11;
+            const cardSize = size * 0.78;
+            ctx.beginPath();
+            ctx.roundRect(cardMargin, cardMargin, cardSize, cardSize * 0.8, size * 0.08);
+            ctx.fill();
+
+            // Blue box (top-left)
+            ctx.fillStyle = '#0ea5e9';
+            ctx.beginPath();
+            ctx.roundRect(cardMargin * 1.2, cardMargin * 1.4, cardSize * 0.35, cardSize * 0.3, size * 0.04);
+            ctx.fill();
+
+            // Purple box (top-right)
+            ctx.fillStyle = '#c026d3';
+            ctx.beginPath();
+            ctx.roundRect(cardMargin * 1.7 + cardSize * 0.35, cardMargin * 1.4, cardSize * 0.35, cardSize * 0.3, size * 0.04);
+            ctx.fill();
+
+            // Blue box (bottom-left)
+            ctx.fillStyle = '#0ea5e9';
+            ctx.beginPath();
+            ctx.roundRect(cardMargin * 1.2, cardMargin * 1.7 + cardSize * 0.3, cardSize * 0.35, cardSize * 0.3, size * 0.04);
+            ctx.fill();
+
+            // Purple box (bottom-right)
+            ctx.fillStyle = '#c026d3';
+            ctx.beginPath();
+            ctx.roundRect(cardMargin * 1.7 + cardSize * 0.35, cardMargin * 1.7 + cardSize * 0.3, cardSize * 0.35, cardSize * 0.3, size * 0.04);
+            ctx.fill();
+
+            // Download
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        sizes.forEach(size => {
+            setTimeout(() => {
+                drawIcon(size, `icon-${size}.png`);
+            }, (size / 512) * 500);
+        });
+
+        // Also generate favicon
+        setTimeout(() => {
+            drawIcon(32, 'favicon.png');
+        }, 1000);
+    </script>
+</body>
+</html>

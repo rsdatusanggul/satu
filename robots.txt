@@ -1,0 +1,7 @@
+# robots.txt for SATU DATU SANGGUL
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://satu.rsuddatusanggul.go.id/sitemap.xml

@@ -1,0 +1,59 @@
+# SATU DATU SANGGUL - Git Ignore File
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# API logs
+api/logs/
+api/*.log
+
+# Cache
+cache/
+*.cache
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if using npm/yarn in future)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temporary files
+tmp/
+temp/
+
+# PHP
+vendor/
+composer.lock
+
+# Icons (placeholder - remove when real icons are added)
+assets/img/*.png
+assets/img/*.ico
+
+# Keep these
+!assets/img/icon.svg
+!assets/img/generate_icons.sh
+!assets/img/icon-placeholder.html

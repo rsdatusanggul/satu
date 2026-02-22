@@ -1,0 +1,32 @@
+# SATU DATU SANGGUL - API Security
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to .env file
+<Files .env>
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevent access to .htaccess file
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Enable CORS for allowed origins
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Handle preflight requests
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Handle OPTIONS requests
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ index.php [L]
+</IfModule>

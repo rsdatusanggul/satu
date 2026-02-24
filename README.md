@@ -78,7 +78,7 @@ SATU DATU SANGGUL adalah aplikasi portal dashboard satu pintu untuk RSUD Datu Sa
    USE_DATABASE=true
 
    # Internal Services Password
-   INTERNAL_PASSWORD=password123
+   INTERNAL_PASSWORD=ganti_password_anda
    ```
 
 3. **Setup Permission**
